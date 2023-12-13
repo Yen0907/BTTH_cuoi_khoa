@@ -1,93 +1,15 @@
 <?php
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP
- *
- * This content is released under the MIT License (MIT)
- *
- * Copyright (c) 2014 - 2017, British Columbia Institute of Technology
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2017, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	https://codeigniter.com
- * @since	Version 3.0.0
- * @filesource
- */
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * PDO SQLSRV Database Adapter Class
- *
- * Note: _DB is an extender class that the app controller
- * creates dynamically based on whether the query builder
- * class is being used or not.
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/user_guide/database/
- */
 class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 
-	/**
-	 * Sub-driver
-	 *
-	 * @var	string
-	 */
 	public $subdriver = 'sqlsrv';
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * ORDER BY random keyword
-	 *
-	 * @var	array
-	 */
 	protected $_random_keyword = array('NEWID()', 'RAND(%d)');
 
-	/**
-	 * Quoted identifier flag
-	 *
-	 * Whether to use SQL-92 standard quoted identifier
-	 * (double quotes) or brackets for identifier escaping.
-	 *
-	 * @var	bool
-	 */
 	protected $_quoted_identifier;
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Class constructor
-	 *
-	 * Builds the DSN if not already set.
-	 *
-	 * @param	array	$params
-	 * @return	void
-	 */
 	public function __construct($params)
 	{
 		parent::__construct($params);
@@ -98,8 +20,6 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 
 			empty($this->port) OR $this->dsn .= ','.$this->port;
 			empty($this->database) OR $this->dsn .= ';Database='.$this->database;
-
-			// Some custom options
 
 			if (isset($this->QuotedId))
 			{
@@ -140,14 +60,6 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Database connection
-	 *
-	 * @param	bool	$persistent
-	 * @return	object
-	 */
 	public function db_connect($persistent = FALSE)
 	{
 		if ( ! empty($this->char_set) && preg_match('/utf[^8]*8/i', $this->char_set))
@@ -171,16 +83,6 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 		return $this->conn_id;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show table query
-	 *
-	 * Generates a platform-specific query string so that the table names can be fetched
-	 *
-	 * @param	bool	$prefix_limit
-	 * @return	string
-	 */
 	protected function _list_tables($prefix_limit = FALSE)
 	{
 		$sql = 'SELECT '.$this->escape_identifiers('name')
@@ -196,16 +98,6 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 		return $sql.' ORDER BY '.$this->escape_identifiers('name');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show column query
-	 *
-	 * Generates a platform-specific query string so that the column names can be fetched
-	 *
-	 * @param	string	$table
-	 * @return	string
-	 */
 	protected function _list_columns($table = '')
 	{
 		return 'SELECT COLUMN_NAME
@@ -213,14 +105,6 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 			WHERE UPPER(TABLE_NAME) = '.$this->escape(strtoupper($table));
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns an object with field data
-	 *
-	 * @param	string	$table
-	 * @return	array
-	 */
 	public function field_data($table)
 	{
 		$sql = 'SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, COLUMN_DEFAULT
@@ -246,17 +130,6 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 		return $retval;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update statement
-	 *
-	 * Generates a platform-specific update string from the supplied data
-	 *
-	 * @param	string	$table
-	 * @param	array	$values
-	 * @return	string
-	 */
 	protected function _update($table, $values)
 	{
 		$this->qb_limit = FALSE;
@@ -264,16 +137,6 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 		return parent::_update($table, $values);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete statement
-	 *
-	 * Generates a platform-specific delete string from the supplied data
-	 *
-	 * @param	string	$table
-	 * @return	string
-	 */
 	protected function _delete($table)
 	{
 		if ($this->qb_limit)
@@ -284,22 +147,10 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 		return parent::_delete($table);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * LIMIT
-	 *
-	 * Generates a platform-specific LIMIT clause
-	 *
-	 * @param	string	$sql	SQL Query
-	 * @return	string
-	 */
 	protected function _limit($sql)
 	{
-		// As of SQL Server 2012 (11.0.*) OFFSET is supported
 		if (version_compare($this->version(), '11', '>='))
 		{
-			// SQL Server OFFSET-FETCH can be used only with the ORDER BY clause
 			empty($this->qb_orderby) && $sql .= ' ORDER BY 1';
 
 			return $sql.' OFFSET '.(int) $this->qb_offset.' ROWS FETCH NEXT '.$this->qb_limit.' ROWS ONLY';
@@ -307,22 +158,18 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 
 		$limit = $this->qb_offset + $this->qb_limit;
 
-		// An ORDER BY clause is required for ROW_NUMBER() to work
 		if ($this->qb_offset && ! empty($this->qb_orderby))
 		{
 			$orderby = $this->_compile_order_by();
 
-			// We have to strip the ORDER BY clause
 			$sql = trim(substr($sql, 0, strrpos($sql, $orderby)));
 
-			// Get the fields to select from our subquery, so that we can avoid CI_rownum appearing in the actual results
 			if (count($this->qb_select) === 0)
 			{
-				$select = '*'; // Inevitable
+				$select = '*'; 
 			}
 			else
 			{
-				// Use only field names and their aliases, everything else is out of our scope.
 				$select = array();
 				$field_regexp = ($this->_quoted_identifier)
 					? '("[^\"]+")' : '(\[[^\]]+\])';
@@ -343,21 +190,8 @@ class CI_DB_pdo_sqlsrv_driver extends CI_DB_pdo_driver {
 		return preg_replace('/(^\SELECT (DISTINCT)?)/i','\\1 TOP '.$limit.' ', $sql);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert batch statement
-	 *
-	 * Generates a platform-specific insert string from the supplied data.
-	 *
-	 * @param	string	$table	Table name
-	 * @param	array	$keys	INSERT keys
-	 * @param	array	$values	INSERT values
-	 * @return	string|bool
-	 */
 	protected function _insert_batch($table, $keys, $values)
 	{
-		// Multiple-value inserts are only supported as of SQL Server 2008
 		if (version_compare($this->version(), '10', '>='))
 		{
 			return parent::_insert_batch($table, $keys, $values);
