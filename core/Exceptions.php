@@ -24,7 +24,6 @@ class CI_Exceptions {
 	public function __construct()
 	{
 		$this->ob_level = ob_get_level();
-		// Note: Do not log messages from this constructor.
 	}
 
 	public function log_exception($severity, $message, $filepath, $line)
@@ -52,7 +51,7 @@ class CI_Exceptions {
 		}
 
 		echo $this->show_error($heading, $message, 'error_404', 404);
-		exit(4); // EXIT_UNKNOWN_FILE
+		exit(4); 
 	}
 
 	public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
