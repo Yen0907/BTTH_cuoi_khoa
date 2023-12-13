@@ -1,93 +1,15 @@
 <?php
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP
- *
- * This content is released under the MIT License (MIT)
- *
- * Copyright (c) 2014 - 2017, British Columbia Institute of Technology
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2017, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	https://codeigniter.com
- * @since	Version 1.3.0
- * @filesource
- */
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * MS SQL Database Adapter Class
- *
- * Note: _DB is an extender class that the app controller
- * creates dynamically based on whether the query builder
- * class is being used or not.
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/user_guide/database/
- */
 class CI_DB_mssql_driver extends CI_DB {
 
-	/**
-	 * Database driver
-	 *
-	 * @var	string
-	 */
 	public $dbdriver = 'mssql';
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * ORDER BY random keyword
-	 *
-	 * @var	array
-	 */
 	protected $_random_keyword = array('NEWID()', 'RAND(%d)');
 
-	/**
-	 * Quoted identifier flag
-	 *
-	 * Whether to use SQL-92 standard quoted identifier
-	 * (double quotes) or brackets for identifier escaping.
-	 *
-	 * @var	bool
-	 */
 	protected $_quoted_identifier = TRUE;
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Class constructor
-	 *
-	 * Appends the port number to the hostname, if needed.
-	 *
-	 * @param	array	$params
-	 * @return	void
-	 */
 	public function __construct($params)
 	{
 		parent::__construct($params);
@@ -98,14 +20,6 @@ class CI_DB_mssql_driver extends CI_DB {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Non-persistent database connection
-	 *
-	 * @param	bool	$persistent
-	 * @return	resource
-	 */
 	public function db_connect($persistent = FALSE)
 	{
 		$this->conn_id = ($persistent)
@@ -117,9 +31,6 @@ class CI_DB_mssql_driver extends CI_DB {
 			return FALSE;
 		}
 
-		// ----------------------------------------------------------------
-
-		// Select the DB... assuming a database name is specified in the config file
 		if ($this->database !== '' && ! $this->db_select())
 		{
 			log_message('error', 'Unable to select database: '.$this->database);
@@ -129,7 +40,6 @@ class CI_DB_mssql_driver extends CI_DB {
 				: FALSE;
 		}
 
-		// Determine how identifiers are escaped
 		$query = $this->query('SELECT CASE WHEN (@@OPTIONS | 256) = @@OPTIONS THEN 1 ELSE 0 END AS qi');
 		$query = $query->row_array();
 		$this->_quoted_identifier = empty($query) ? FALSE : (bool) $query['qi'];
@@ -138,14 +48,6 @@ class CI_DB_mssql_driver extends CI_DB {
 		return $this->conn_id;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Select the database
-	 *
-	 * @param	string	$database
-	 * @return	bool
-	 */
 	public function db_select($database = '')
 	{
 		if ($database === '')
@@ -153,8 +55,6 @@ class CI_DB_mssql_driver extends CI_DB {
 			$database = $this->database;
 		}
 
-		// Note: Escaping is required in the event that the DB name
-		// contains reserved characters.
 		if (mssql_select_db('['.$database.']', $this->conn_id))
 		{
 			$this->database = $database;
@@ -165,76 +65,31 @@ class CI_DB_mssql_driver extends CI_DB {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Execute the query
-	 *
-	 * @param	string	$sql	an SQL query
-	 * @return	mixed	resource if rows are returned, bool otherwise
-	 */
 	protected function _execute($sql)
 	{
 		return mssql_query($sql, $this->conn_id);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Begin Transaction
-	 *
-	 * @return	bool
-	 */
 	protected function _trans_begin()
 	{
 		return $this->simple_query('BEGIN TRAN');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Commit Transaction
-	 *
-	 * @return	bool
-	 */
 	protected function _trans_commit()
 	{
 		return $this->simple_query('COMMIT TRAN');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Rollback Transaction
-	 *
-	 * @return	bool
-	 */
 	protected function _trans_rollback()
 	{
 		return $this->simple_query('ROLLBACK TRAN');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Affected Rows
-	 *
-	 * @return	int
-	 */
 	public function affected_rows()
 	{
 		return mssql_rows_affected($this->conn_id);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert ID
-	 *
-	 * Returns the last id created in the Identity column.
-	 *
-	 * @return	string
-	 */
 	public function insert_id()
 	{
 		$query = version_compare($this->version(), '8', '>=')
@@ -246,41 +101,16 @@ class CI_DB_mssql_driver extends CI_DB {
 		return $query->last_id;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set client character set
-	 *
-	 * @param	string	$charset
-	 * @return	bool
-	 */
 	protected function _db_set_charset($charset)
 	{
 		return (ini_set('mssql.charset', $charset) !== FALSE);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Version number query string
-	 *
-	 * @return	string
-	 */
 	protected function _version()
 	{
 		return "SELECT SERVERPROPERTY('ProductVersion') AS ver";
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * List table query
-	 *
-	 * Generates a platform-specific query string so that the table names can be fetched
-	 *
-	 * @param	bool	$prefix_limit
-	 * @return	string
-	 */
 	protected function _list_tables($prefix_limit = FALSE)
 	{
 		$sql = 'SELECT '.$this->escape_identifiers('name')
@@ -296,16 +126,6 @@ class CI_DB_mssql_driver extends CI_DB {
 		return $sql.' ORDER BY '.$this->escape_identifiers('name');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * List column query
-	 *
-	 * Generates a platform-specific query string so that the column names can be fetched
-	 *
-	 * @param	string	$table
-	 * @return	string
-	 */
 	protected function _list_columns($table = '')
 	{
 		return 'SELECT COLUMN_NAME
@@ -313,14 +133,6 @@ class CI_DB_mssql_driver extends CI_DB {
 			WHERE UPPER(TABLE_NAME) = '.$this->escape(strtoupper($table));
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns an object with field data
-	 *
-	 * @param	string	$table
-	 * @return	array
-	 */
 	public function field_data($table)
 	{
 		$sql = 'SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, COLUMN_DEFAULT
@@ -346,21 +158,9 @@ class CI_DB_mssql_driver extends CI_DB {
 		return $retval;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occured.
-	 *
-	 * @return	array
-	 */
 	public function error()
 	{
-		// We need this because the error info is discarded by the
-		// server the first time you request it, and query() already
-		// calls error() once for logging purposes when a query fails.
+	
 		static $error = array('code' => 0, 'message' => NULL);
 
 		$message = mssql_get_last_message();
@@ -373,17 +173,6 @@ class CI_DB_mssql_driver extends CI_DB {
 		return $error;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update statement
-	 *
-	 * Generates a platform-specific update string from the supplied data
-	 *
-	 * @param	string	$table
-	 * @param	array	$values
-	 * @return	string
-	 */
 	protected function _update($table, $values)
 	{
 		$this->qb_limit = FALSE;
@@ -391,34 +180,11 @@ class CI_DB_mssql_driver extends CI_DB {
 		return parent::_update($table, $values);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Truncate statement
-	 *
-	 * Generates a platform-specific truncate string from the supplied data
-	 *
-	 * If the database does not support the TRUNCATE statement,
-	 * then this method maps to 'DELETE FROM table'
-	 *
-	 * @param	string	$table
-	 * @return	string
-	 */
 	protected function _truncate($table)
 	{
 		return 'TRUNCATE TABLE '.$table;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete statement
-	 *
-	 * Generates a platform-specific delete string from the supplied data
-	 *
-	 * @param	string	$table
-	 * @return	string
-	 */
 	protected function _delete($table)
 	{
 		if ($this->qb_limit)
@@ -429,37 +195,21 @@ class CI_DB_mssql_driver extends CI_DB {
 		return parent::_delete($table);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * LIMIT
-	 *
-	 * Generates a platform-specific LIMIT clause
-	 *
-	 * @param	string	$sql	SQL Query
-	 * @return	string
-	 */
 	protected function _limit($sql)
 	{
 		$limit = $this->qb_offset + $this->qb_limit;
 
-		// As of SQL Server 2005 (9.0.*) ROW_NUMBER() is supported,
-		// however an ORDER BY clause is required for it to work
 		if (version_compare($this->version(), '9', '>=') && $this->qb_offset && ! empty($this->qb_orderby))
 		{
 			$orderby = $this->_compile_order_by();
 
-			// We have to strip the ORDER BY clause
 			$sql = trim(substr($sql, 0, strrpos($sql, $orderby)));
-
-			// Get the fields to select from our subquery, so that we can avoid CI_rownum appearing in the actual results
 			if (count($this->qb_select) === 0)
 			{
 				$select = '*'; // Inevitable
 			}
 			else
 			{
-				// Use only field names and their aliases, everything else is out of our scope.
 				$select = array();
 				$field_regexp = ($this->_quoted_identifier)
 					? '("[^\"]+")' : '(\[[^\]]+\])';
@@ -480,18 +230,6 @@ class CI_DB_mssql_driver extends CI_DB {
 		return preg_replace('/(^\SELECT (DISTINCT)?)/i','\\1 TOP '.$limit.' ', $sql);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert batch statement
-	 *
-	 * Generates a platform-specific insert string from the supplied data.
-	 *
-	 * @param	string	$table	Table name
-	 * @param	array	$keys	INSERT keys
-	 * @param	array	$values	INSERT values
-	 * @return	string|bool
-	 */
 	protected function _insert_batch($table, $keys, $values)
 	{
 		// Multiple-value inserts are only supported as of SQL Server 2008
@@ -503,13 +241,6 @@ class CI_DB_mssql_driver extends CI_DB {
 		return ($this->db->db_debug) ? $this->db->display_error('db_unsupported_feature') : FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
 	protected function _close()
 	{
 		mssql_close($this->conn_id);
