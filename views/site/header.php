@@ -1,6 +1,6 @@
-<div class="row" style="margin-top: 8px;height: 110px">
+<div class="row" style="margin-top: 8px;height: 130px">
 			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 clearpadding">
-				<a  href="<?php echo base_url(); ?>"><img style="max-height: 110px;width: 100%"s src="http://static.ybox.vn/2020/7/4/1595512051129-ezgif.com-optimize%20(29).gif"></a>
+				<a  href="<?php echo base_url(); ?>"><img style="max-height: 130px;width: 70%"s src="https://beedesign.com.vn/wp-content/uploads/2020/10/thiet-ke-logo-nha-sach-book-pink.png"></a>
 			</div>
 			<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 clearpadding">
 				<a href="#"><img style="max-height: 110px;width: 100%" src="https://lib.hunre.edu.vn/Images/Logo.jpg"></a>
